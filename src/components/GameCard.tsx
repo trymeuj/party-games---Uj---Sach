@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Game } from '../types';
 import { theme } from '../theme';
 import Badge from './Badge';
@@ -14,7 +14,7 @@ export default function GameCard({ game, onPress }: GameCardProps) {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
       <LinearGradient
-        colors={game.gradient}
+        colors={game.gradient as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.card}
