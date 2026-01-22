@@ -20,7 +20,32 @@ type Props = {
   navigation: TabooScreenNavigationProp;
 };
 
+const TABOO_CARDS = [
+  { word: 'Coffee', forbidden: ['Drink', 'Caffeine', 'Starbucks', 'Beans', 'Morning'] },
+  { word: 'Beach', forbidden: ['Sand', 'Ocean', 'Sun', 'Summer', 'Waves'] },
+  { word: 'Superman', forbidden: ['Adventures', 'Hero', 'Fly', 'Kryptonite', 'Clark Kent'] },
+  { word: 'iPhone', forbidden: ['Apple', 'Phone', 'Call', 'Siri', 'Steve Jobs'] },
+  { word: 'Pizza', forbidden: ['Cheese', 'Pepperoni', 'Italy', 'Dough', 'Slice'] },
+  { word: 'Guitar', forbidden: ['Strings', 'Music', 'Instrument', 'Play', 'Rock'] },
+  { word: 'Vampire', forbidden: ['Blood', 'Dracula', 'Teeth', 'Bat', 'Twilight'] },
+  { word: 'Instagram', forbidden: ['Photo', 'App', 'Like', 'Filter', 'Story'] },
+  { word: 'Snowman', forbidden: ['Winter', 'Cold', 'Carrot', 'Frosty', 'White'] },
+  { word: 'Library', forbidden: ['Books', 'Read', 'Quiet', 'Study', 'School'] },
+];
+
 export default function TabooScreen({ navigation }: Props) {
+  const [currentCard, setCurrentCard] = React.useState(() => {
+    return TABOO_CARDS[Math.floor(Math.random() * TABOO_CARDS.length)];
+  });
+
+  const nextCard = () => {
+    let newCard;
+    do {
+      newCard = TABOO_CARDS[Math.floor(Math.random() * TABOO_CARDS.length)];
+    } while (newCard === currentCard && TABOO_CARDS.length > 1);
+    setCurrentCard(newCard);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
@@ -35,36 +60,27 @@ export default function TabooScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>🚫</Text>
-          </View>
-
-          <Text style={styles.title}>Taboo</Text>
-          <Text style={styles.subtitle}>
-            Describe words without using forbidden terms
-          </Text>
-
-          <View style={styles.comingSoonCard}>
-            <Text style={styles.comingSoonText}>Coming Soon!</Text>
-            <Text style={styles.descriptionText}>
-              Get ready to describe words{'\n'}without saying the forbidden ones
-            </Text>
-          </View>
-
-          <View style={styles.featuresContainer}>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>⏱️</Text>
-              <Text style={styles.featureText}>Timed rounds</Text>
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.topicText}>GUESS THIS:</Text>
+              <Text style={styles.targetWord}>{currentCard.word}</Text>
             </View>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🎯</Text>
-              <Text style={styles.featureText}>Score tracking</Text>
-            </View>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🎲</Text>
-              <Text style={styles.featureText}>Random words</Text>
+
+            <View style={styles.divider} />
+
+            <View style={styles.forbiddenContainer}>
+              <Text style={styles.forbiddenLabel}>DON'T SAY:</Text>
+              {currentCard.forbidden.map((word, index) => (
+                <Text key={index} style={styles.forbiddenWord}>
+                  {word}
+                </Text>
+              ))}
             </View>
           </View>
+
+          <TouchableOpacity style={styles.nextButton} onPress={nextCard}>
+            <Text style={styles.nextButtonText}>Next Card ➡️</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -100,66 +116,80 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+    paddingBottom: theme.spacing['2xl'],
   },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: theme.colors.taboo,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: theme.spacing.lg,
-  },
-  icon: {
-    fontSize: 40,
-  },
-  title: {
-    fontSize: theme.typography.sizes['3xl'],
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.foreground,
-    marginBottom: theme.spacing.sm,
-  },
-  subtitle: {
-    fontSize: theme.typography.sizes.base,
-    color: theme.colors.mutedForeground,
-    textAlign: 'center',
-    marginBottom: theme.spacing.xl,
-  },
-  comingSoonCard: {
+  card: {
     width: '100%',
     backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.xl,
-    padding: theme.spacing.xl,
+    borderRadius: theme.borderRadius['2xl'],
+    padding: theme.spacing['2xl'],
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
+    // Shadow for dark theme might need adjustment or be subtle
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+    marginBottom: theme.spacing['2xl'],
   },
-  comingSoonText: {
-    fontSize: theme.typography.sizes['2xl'],
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.foreground,
-    marginBottom: theme.spacing.sm,
-  },
-  descriptionText: {
-    fontSize: theme.typography.sizes.base,
-    color: theme.colors.mutedForeground,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    gap: theme.spacing.lg,
-  },
-  feature: {
+  cardHeader: {
     alignItems: 'center',
+    marginBottom: theme.spacing.lg,
   },
-  featureIcon: {
-    fontSize: 32,
-    marginBottom: theme.spacing.xs,
-  },
-  featureText: {
+  topicText: {
     fontSize: theme.typography.sizes.sm,
     color: theme.colors.mutedForeground,
+    fontWeight: theme.typography.weights.bold,
+    letterSpacing: 2,
+    marginBottom: theme.spacing.xs,
+  },
+  targetWord: {
+    fontSize: theme.typography.sizes['4xl'],
+    fontWeight: theme.typography.weights.bold, // changed from black
+    color: theme.colors.taboo,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  divider: {
+    height: 2,
+    width: '100%',
+    backgroundColor: theme.colors.taboo,
+    opacity: 0.2,
+    marginVertical: theme.spacing.lg,
+  },
+  forbiddenContainer: {
+    width: '100%',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+  },
+  forbiddenLabel: {
+    fontSize: theme.typography.sizes.xs,
+    color: theme.colors.kill,
+    fontWeight: theme.typography.weights.bold,
+    marginBottom: theme.spacing.xs,
+    letterSpacing: 1,
+  },
+  forbiddenWord: {
+    fontSize: theme.typography.sizes.xl,
+    color: theme.colors.foreground, // Changed from dark grey to foreground
+    fontWeight: theme.typography.weights.medium,
+  },
+  nextButton: {
+    backgroundColor: theme.colors.taboo,
+    paddingHorizontal: theme.spacing['2xl'],
+    paddingVertical: theme.spacing.lg,
+    borderRadius: theme.borderRadius.xl,
+    width: '100%',
+    alignItems: 'center',
+  },
+  nextButtonText: {
+    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
   },
 });
 
