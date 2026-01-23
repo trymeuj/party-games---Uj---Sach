@@ -22,20 +22,32 @@ type Props = {
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
-const celebrities = [
-  'Taylor Swift',
-  'Ryan Reynolds',
-  'Margot Robbie',
-  'Dwayne Johnson',
-  'Zendaya',
+const CELEBRITIES = [
+  'Taylor Swift', 'Dwayne Johnson', 'Leonardo DiCaprio', 'Beyoncé', 'Brad Pitt',
+  'Rihanna', 'Will Smith', 'Kim Kardashian', 'Johnny Depp', 'Lady Gaga',
+  'Tom Cruise', 'Ariana Grande', 'Robert Downey Jr.', 'Justin Bieber', 'Jennifer Lawrence',
+  'Chris Hemsworth', 'Selena Gomez', 'Kanye West', 'Scarlett Johansson', 'Drake',
+  'Angelina Jolie', 'Kevin Hart', 'Oprah Winfrey', 'Elon Musk', 'Mark Zuckerberg',
+  'Barack Obama', 'Donald Trump', 'Michael Jordan', 'Serena Williams', 'Lionel Messi',
+  'Cristiano Ronaldo', 'Harry Styles', 'Gordon Ramsay'
 ];
 
 export default function GuessWhoScreen({ navigation }: Props) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [isRevealed, setIsRevealed] = useState(false);
-  const [currentCelebrity] = useState(
-    celebrities[Math.floor(Math.random() * celebrities.length)]
-  );
+  const [currentCelebrity, setCurrentCelebrity] = useState(() => {
+    return CELEBRITIES[Math.floor(Math.random() * CELEBRITIES.length)];
+  });
+
+  const nextCelebrity = () => {
+    let newCeleb;
+    do {
+      newCeleb = CELEBRITIES[Math.floor(Math.random() * CELEBRITIES.length)];
+    } while (newCeleb === currentCelebrity);
+
+    setCurrentCelebrity(newCeleb);
+    setIsRevealed(false); // Hide the new one initially
+  };
 
   const getDifficultyColor = () => {
     switch (difficulty) {
@@ -98,25 +110,33 @@ export default function GuessWhoScreen({ navigation }: Props) {
               <Text style={styles.revealIcon}>{isRevealed ? '👁️' : '🙈'}</Text>
             </TouchableOpacity>
 
-            <Text style={styles.readyText}>Ready to See?</Text>
-            <Text style={styles.instructionText}>
-              Only one player should see the name{'\n'}Everyone else look away!
+            <Text style={styles.readyText}>
+              {isRevealed ? "It's..." : "Ready to See?"}
             </Text>
 
-            <TouchableOpacity
-              style={styles.revealNameButton}
-              onPress={() => setIsRevealed(!isRevealed)}
-            >
-              <Text style={styles.revealNameIcon}>👁️</Text>
-              <Text style={styles.revealNameText}>
-                {isRevealed ? currentCelebrity : 'Reveal Name'}
+            {isRevealed ? (
+              <Text style={styles.celebrityName}>{currentCelebrity}</Text>
+            ) : (
+              <Text style={styles.instructionText}>
+                Only one player should see the name{'\n'}Everyone else look away!
               </Text>
-            </TouchableOpacity>
+            )}
+
+            {!isRevealed && (
+              <TouchableOpacity
+                style={styles.revealNameButton}
+                onPress={() => setIsRevealed(true)}
+              >
+                <Text style={styles.revealNameIcon}>👁️</Text>
+                <Text style={styles.revealNameText}>Reveal Name</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          <Text style={styles.footer}>
-            Only one player should see the name
-          </Text>
+          <TouchableOpacity style={styles.nextButton} onPress={nextCelebrity}>
+            <Text style={styles.nextButtonText}>Next Person ➡️</Text>
+          </TouchableOpacity>
+
         </View>
       </View>
     </SafeAreaView>
@@ -164,29 +184,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing['2xl'],
   },
   iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: theme.colors.guessWho,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   icon: {
-    fontSize: 40,
+    fontSize: 30,
   },
   title: {
     fontSize: theme.typography.sizes['3xl'],
     fontWeight: theme.typography.weights.bold,
     color: theme.colors.foreground,
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.xs,
   },
   subtitle: {
     fontSize: theme.typography.sizes.base,
     color: theme.colors.mutedForeground,
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.lg,
   },
   revealCard: {
     width: '100%',
@@ -195,16 +216,21 @@ const styles = StyleSheet.create({
     padding: theme.spacing.xl,
     alignItems: 'center',
     marginBottom: theme.spacing.lg,
+    shadowColor: theme.colors.guessWho,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
   },
   difficultyBadge: {
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.lg,
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   difficultyText: {
     color: '#FFFFFF',
-    fontSize: theme.typography.sizes.sm,
+    fontSize: theme.typography.sizes.xs,
     fontWeight: theme.typography.weights.bold,
   },
   revealButton: {
@@ -232,6 +258,13 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.lg,
     lineHeight: 22,
   },
+  celebrityName: {
+    fontSize: theme.typography.sizes['3xl'],
+    fontWeight: theme.typography.weights.bold,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: theme.spacing.lg,
+  },
   revealNameButton: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: theme.spacing.xl,
@@ -251,10 +284,20 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.lg,
     fontWeight: theme.typography.weights.bold,
   },
-  footer: {
-    fontSize: theme.typography.sizes.base,
-    color: theme.colors.mutedForeground,
-    textAlign: 'center',
+  nextButton: {
+    backgroundColor: theme.colors.secondary,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
+    borderRadius: theme.borderRadius.xl,
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.muted,
+  },
+  nextButtonText: {
+    color: theme.colors.foreground,
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
   },
 });
 
