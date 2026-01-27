@@ -272,10 +272,11 @@ const styles = StyleSheet.create({
   },
   startButton: {
     backgroundColor: theme.colors.taboo,
-    paddingHorizontal: theme.spacing['2xl'],
+    paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.lg,
     borderRadius: 1000,
-    width: '100%',
+    minWidth: '60%',
+    alignSelf: 'center',
     alignItems: 'center',
     shadowColor: theme.colors.taboo,
     shadowOffset: { width: 0, height: 4 },

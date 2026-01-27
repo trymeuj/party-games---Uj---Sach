@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.base,
     color: theme.colors.mutedForeground,
     marginBottom: theme.spacing.lg,
+    textAlign: 'center',
   },
   revealCard: {
     width: '100%',
