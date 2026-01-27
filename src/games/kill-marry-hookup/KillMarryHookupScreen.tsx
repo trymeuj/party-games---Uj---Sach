@@ -47,6 +47,7 @@ const generateRound = (): Person[] => {
 };
 
 export default function KillMarryHookupScreen({ navigation }: Props) {
+  const [hasStarted, setHasStarted] = useState(false);
   const [people, setPeople] = useState<Person[]>(() => generateRound());
 
   const handleChoice = (index: number, choice: 'kill' | 'marry' | 'hookup') => {
@@ -76,17 +77,6 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
     });
   };
 
-  const getChoiceColor = (choice: 'kill' | 'marry' | 'hookup') => {
-    switch (choice) {
-      case 'kill':
-        return theme.colors.kill;
-      case 'marry':
-        return theme.colors.marry;
-      case 'hookup':
-        return theme.colors.hookup;
-    }
-  };
-
   const getChoiceIcon = (choice: 'kill' | 'marry' | 'hookup') => {
     switch (choice) {
       case 'kill':
@@ -103,6 +93,41 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
   const handleNextRound = () => {
     setPeople(generateRound());
   };
+
+  if (!hasStarted) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.homeButtonHeader}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.homeButtonText}>🏠</Text>
+          </TouchableOpacity>
+
+          <View style={styles.introContent}>
+            <View style={styles.introIconContainer}>
+              <Text style={styles.introIcon}>😈</Text>
+            </View>
+            <Text style={styles.introTitle}>Choices Await</Text>
+            <Text style={styles.introText}>
+              Three names. Three fates.{'\n'}
+              Who stays, who goes, and who is the one?
+            </Text>
+
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={() => setHasStarted(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.startButtonText}>Dive In & Discover</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -122,6 +147,11 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          <View style={styles.gameHeader}>
+            <Text style={styles.gameTitle}>Make Your Choice 🎭</Text>
+            <Text style={styles.gameSubtitle}>Drag your feelings or tap to decide.</Text>
+          </View>
+
           {people.map((person, index) => (
             <View key={index} style={styles.personCard}>
               <Text style={styles.personName}>{person.name}</Text>
@@ -135,7 +165,6 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
                   ]}
                   onPress={() => handleChoice(index, 'kill')}
                   activeOpacity={0.7}
-                  disabled={false}
                 >
                   <Text style={styles.choiceIcon} pointerEvents="none">💀</Text>
                   <Text style={styles.choiceText} pointerEvents="none">Kill</Text>
@@ -149,7 +178,6 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
                   ]}
                   onPress={() => handleChoice(index, 'marry')}
                   activeOpacity={0.7}
-                  disabled={false}
                 >
                   <Text style={styles.choiceIcon} pointerEvents="none">❤️</Text>
                   <Text style={styles.choiceText} pointerEvents="none">Marry</Text>
@@ -164,7 +192,6 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
                   ]}
                   onPress={() => handleChoice(index, 'hookup')}
                   activeOpacity={0.7}
-                  disabled={false}
                 >
                   <Text style={styles.choiceIcon} pointerEvents="none">🔥</Text>
                   <Text style={styles.choiceText} pointerEvents="none">Hookup</Text>
@@ -173,7 +200,7 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
 
               {person.choice && (
                 <Text style={styles.selectedChoiceText}>
-                  You chose: {getChoiceIcon(person.choice)} {person.choice.toUpperCase()}
+                  {getChoiceIcon(person.choice)} You chose to {person.choice.toUpperCase()}
                 </Text>
               )}
             </View>
@@ -189,7 +216,7 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
             activeOpacity={0.7}
           >
             <Text style={styles.nextRoundButtonText}>
-              {isRoundComplete ? 'Next Round ➡️' : 'Make choices for all first'}
+              {isRoundComplete ? 'Next Trio ➡️' : 'Decide their fate...'}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -218,10 +245,83 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     alignSelf: 'flex-start',
   },
+  homeButtonHeader: {
+    position: 'absolute',
+    top: theme.spacing.md,
+    left: theme.spacing.lg,
+    zIndex: 10,
+    backgroundColor: theme.colors.secondary,
+    padding: theme.spacing.sm,
+    borderRadius: theme.borderRadius.lg,
+  },
   homeButtonText: {
     color: theme.colors.foreground,
     fontSize: theme.typography.sizes.base,
     fontWeight: theme.typography.weights.medium,
+  },
+  introContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing['2xl'],
+  },
+  introIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: theme.colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  introIcon: {
+    fontSize: 50,
+  },
+  introTitle: {
+    fontSize: theme.typography.sizes['4xl'],
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.foreground,
+    marginBottom: theme.spacing.md,
+    textAlign: 'center',
+  },
+  introText: {
+    fontSize: theme.typography.sizes.lg,
+    color: theme.colors.mutedForeground,
+    textAlign: 'center',
+    marginBottom: theme.spacing['2xl'],
+    lineHeight: 28,
+  },
+  startButton: {
+    backgroundColor: theme.colors.killMarryHookup,
+    paddingHorizontal: theme.spacing['2xl'],
+    paddingVertical: theme.spacing.lg,
+    borderRadius: 1000,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: theme.colors.killMarryHookup,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  startButtonText: {
+    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+  },
+  gameHeader: {
+    marginBottom: theme.spacing.xl,
+    alignItems: 'center',
+  },
+  gameTitle: {
+    fontSize: theme.typography.sizes['2xl'],
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.foreground,
+    marginBottom: theme.spacing.xs,
+  },
+  gameSubtitle: {
+    fontSize: theme.typography.sizes.base,
+    color: theme.colors.mutedForeground,
   },
   scrollView: {
     flex: 1,
@@ -283,9 +383,10 @@ const styles = StyleSheet.create({
   selectedChoiceText: {
     marginTop: theme.spacing.sm,
     fontSize: theme.typography.sizes.base,
-    color: theme.colors.foreground,
+    color: theme.colors.mutedForeground,
     fontWeight: theme.typography.weights.medium,
     textAlign: 'center',
+    fontStyle: 'italic',
   },
   nextRoundButton: {
     marginTop: theme.spacing.md,
