@@ -34,6 +34,7 @@ const TABOO_CARDS = [
 ];
 
 export default function TabooScreen({ navigation }: Props) {
+  const [hasStarted, setHasStarted] = React.useState(false);
   const [currentCard, setCurrentCard] = React.useState(() => {
     return TABOO_CARDS[Math.floor(Math.random() * TABOO_CARDS.length)];
   });
@@ -45,6 +46,42 @@ export default function TabooScreen({ navigation }: Props) {
     } while (newCard === currentCard && TABOO_CARDS.length > 1);
     setCurrentCard(newCard);
   };
+
+  if (!hasStarted) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.homeButtonHeader}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.homeButtonText}>🏠</Text>
+          </TouchableOpacity>
+
+          <View style={styles.introContent}>
+            <View style={styles.introIconContainer}>
+              <Text style={styles.introIcon}>🙊</Text>
+            </View>
+            <Text style={styles.introTitle}>Watch Your Mouth</Text>
+            <Text style={styles.introText}>
+              Describe the word without slipping up.{'\n'}
+              One forbidden word and it's over!{'\n\n'}
+              ⚠️ Rule: Only one word hints allowed!
+            </Text>
+
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={() => setHasStarted(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.startButtonText}>Start Describes</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -187,6 +224,66 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nextButtonText: {
+    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+  },
+  // Intro Styles
+  homeButtonHeader: {
+    position: 'absolute',
+    top: theme.spacing.md,
+    left: theme.spacing.lg,
+    zIndex: 10,
+    backgroundColor: theme.colors.secondary,
+    padding: theme.spacing.sm,
+    borderRadius: theme.borderRadius.lg,
+  },
+  introContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing['2xl'],
+  },
+  introIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: theme.colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  introIcon: {
+    fontSize: 50,
+  },
+  introTitle: {
+    fontSize: theme.typography.sizes['4xl'],
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.foreground,
+    marginBottom: theme.spacing.md,
+    textAlign: 'center',
+  },
+  introText: {
+    fontSize: theme.typography.sizes.lg,
+    color: theme.colors.mutedForeground,
+    textAlign: 'center',
+    marginBottom: theme.spacing['2xl'],
+    lineHeight: 28,
+  },
+  startButton: {
+    backgroundColor: theme.colors.taboo,
+    paddingHorizontal: theme.spacing['2xl'],
+    paddingVertical: theme.spacing.lg,
+    borderRadius: 1000,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: theme.colors.taboo,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  startButtonText: {
     color: '#FFFFFF',
     fontSize: theme.typography.sizes.xl,
     fontWeight: theme.typography.weights.bold,

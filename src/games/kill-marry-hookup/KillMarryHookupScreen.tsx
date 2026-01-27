@@ -39,7 +39,72 @@ const ALL_PEOPLE = [
   'Your Childhood Crush',
   'Your Neighbor',
   'The Person Who Texted You Last',
+  'Your First Date',
+  'Your High School Bully',
+  'The Bartender',
+  'Your Clone',
+  'A Billionaire Octogenarian',
+  'Your Favorite Teacher',
+  'The Person on Your Right',
+  'Kanye West',
+  'Your Landlord',
+  'The Person Holding Your Drink',
+  'A Random Stranger',
+  'Your Therapist',
+  'Your Gym Trainer',
+  'The President',
+  'Your Doppelgänger',
+  'A Pirate Captain',
+  'An Alien Visitor',
+  // Famous Personalities
+  'Taylor Swift',
+  'Dwayne "The Rock" Johnson',
+  'Zendaya',
+  'Leonardo DiCaprio',
+  'Kim Kardashian',
+  'Elon Musk',
+  'Rihanna',
+  'Brad Pitt',
+  'Beyoncé',
+  'Tom Holland',
+  'Jennifer Lawrence',
+  'Will Smith',
+  'Margot Robbie',
+  'Barack Obama',
+  'Gordon Ramsay',
+  'Justin Bieber',
 ];
+
+const WITTY_COMMENTS = {
+  kill: [
+    "Ahem, keeping grudges, are we? 👀",
+    "Someone's not making the guest list. 🚫",
+    "Ruthless! I like it. 😈",
+    "Bye bye! Won't be missed. 👋",
+    "That's cold... ice cold. ❄️"
+  ],
+  marry: [
+    "Awww, hear those wedding bells? 🔔",
+    "Till death do us part! 💍",
+    "Wifey/Hubby material right there! ✨",
+    "Putting a ring on it! 💎",
+    "Simping hard, are we? 😍"
+  ],
+  hookup: [
+    "Spicy choice! 🌶️",
+    "It's getting hot in here! 🔥",
+    "Just for one night... or two? 😉",
+    "Swipe right! 👉",
+    "Wild thoughts only! 🤫"
+  ],
+};
+
+const getWittyComment = (choice: 'kill' | 'marry' | 'hookup', name: string) => {
+  const options = WITTY_COMMENTS[choice];
+  // Simple deterministic hash based on name length so the comment stays consistent for the same person
+  const index = name.length % options.length;
+  return options[index];
+};
 
 const generateRound = (): Person[] => {
   const shuffled = [...ALL_PEOPLE].sort(() => Math.random() - 0.5);
@@ -200,7 +265,7 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
 
               {person.choice && (
                 <Text style={styles.selectedChoiceText}>
-                  {getChoiceIcon(person.choice)} You chose to {person.choice.toUpperCase()}
+                  {getWittyComment(person.choice, person.name)}
                 </Text>
               )}
             </View>
