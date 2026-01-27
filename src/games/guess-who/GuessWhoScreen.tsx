@@ -76,6 +76,11 @@ export default function GuessWhoScreen({ navigation }: Props) {
               styles.levelButton,
               { backgroundColor: getDifficultyColor() },
             ]}
+            onPress={() =>
+              setDifficulty((prev) =>
+                prev === 'easy' ? 'medium' : prev === 'medium' ? 'hard' : 'easy'
+              )
+            }
           >
             <Text style={styles.levelButtonText}>
               🎚️ {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
@@ -89,7 +94,7 @@ export default function GuessWhoScreen({ navigation }: Props) {
           </View>
 
           <Text style={styles.title}>Guess Who?</Text>
-          <Text style={styles.subtitle}>One sees, others ask questions</Text>
+          <Text style={styles.subtitle}>One sees, others ask only yes/no questions</Text>
 
           <View style={styles.revealCard}>
             <View
@@ -118,7 +123,8 @@ export default function GuessWhoScreen({ navigation }: Props) {
               <Text style={styles.celebrityName}>{currentCelebrity}</Text>
             ) : (
               <Text style={styles.instructionText}>
-                Only one player should see the name{'\n'}Everyone else look away!
+                Only one player should see the name{'\n'}
+                Everyone else look away, then ask only yes/no questions to guess!
               </Text>
             )}
 
