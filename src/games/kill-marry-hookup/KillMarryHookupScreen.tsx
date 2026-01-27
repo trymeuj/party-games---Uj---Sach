@@ -28,21 +28,52 @@ interface Person {
   choice: Choice;
 }
 
-const samplePeople = [
+const ALL_PEOPLE = [
   'Harry Styles',
   'Person on Your Left',
   'Your Uber Driver',
+  'Your Ex',
+  'Your Boss',
+  'Your Celebrity Crush',
+  'Your Best Friend',
+  'Your Childhood Crush',
+  'Your Neighbor',
+  'The Person Who Texted You Last',
 ];
 
+const generateRound = (): Person[] => {
+  const shuffled = [...ALL_PEOPLE].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3).map((name) => ({ name, choice: null }));
+};
+
 export default function KillMarryHookupScreen({ navigation }: Props) {
-  const [people, setPeople] = useState<Person[]>(
-    samplePeople.map((name) => ({ name, choice: null }))
-  );
+  const [people, setPeople] = useState<Person[]>(() => generateRound());
 
   const handleChoice = (index: number, choice: 'kill' | 'marry' | 'hookup') => {
-    const newPeople = [...people];
-    newPeople[index].choice = choice;
-    setPeople(newPeople);
+    setPeople((prev) => {
+      const isSameChoice = prev[index].choice === choice;
+
+      return prev.map((person, i) => {
+        // Toggle off if tapping the same choice again
+        if (i === index) {
+          return {
+            ...person,
+            choice: isSameChoice ? null : choice,
+          };
+        }
+
+        // If we're assigning this choice to a new person,
+        // clear it from any other person who had it before
+        if (!isSameChoice && person.choice === choice) {
+          return {
+            ...person,
+            choice: null,
+          };
+        }
+
+        return person;
+      });
+    });
   };
 
   const getChoiceColor = (choice: 'kill' | 'marry' | 'hookup') => {
@@ -67,6 +98,12 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
     }
   };
 
+  const isRoundComplete = people.every((person) => person.choice !== null);
+
+  const handleNextRound = () => {
+    setPeople(generateRound());
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
@@ -78,11 +115,6 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
           >
             <Text style={styles.homeButtonText}>🏠 Home</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>Kill Marry Hookup</Text>
-          <Text style={styles.subtitle}>Make your choice for each person</Text>
         </View>
 
         <ScrollView
@@ -97,13 +129,16 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
                 <TouchableOpacity
                   style={[
                     styles.choiceButton,
+                    styles.choiceButtonFirst,
                     { backgroundColor: theme.colors.kill },
                     person.choice === 'kill' && styles.choiceButtonSelected,
                   ]}
                   onPress={() => handleChoice(index, 'kill')}
+                  activeOpacity={0.7}
+                  disabled={false}
                 >
-                  <Text style={styles.choiceIcon}>💀</Text>
-                  <Text style={styles.choiceText}>Kill</Text>
+                  <Text style={styles.choiceIcon} pointerEvents="none">💀</Text>
+                  <Text style={styles.choiceText} pointerEvents="none">Kill</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -113,27 +148,50 @@ export default function KillMarryHookupScreen({ navigation }: Props) {
                     person.choice === 'marry' && styles.choiceButtonSelected,
                   ]}
                   onPress={() => handleChoice(index, 'marry')}
+                  activeOpacity={0.7}
+                  disabled={false}
                 >
-                  <Text style={styles.choiceIcon}>❤️</Text>
-                  <Text style={styles.choiceText}>Marry</Text>
+                  <Text style={styles.choiceIcon} pointerEvents="none">❤️</Text>
+                  <Text style={styles.choiceText} pointerEvents="none">Marry</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={[
                     styles.choiceButton,
+                    styles.choiceButtonLast,
                     { backgroundColor: theme.colors.hookup },
                     person.choice === 'hookup' && styles.choiceButtonSelected,
                   ]}
                   onPress={() => handleChoice(index, 'hookup')}
+                  activeOpacity={0.7}
+                  disabled={false}
                 >
-                  <Text style={styles.choiceIcon}>🔥</Text>
-                  <Text style={styles.choiceText}>Hookup</Text>
+                  <Text style={styles.choiceIcon} pointerEvents="none">🔥</Text>
+                  <Text style={styles.choiceText} pointerEvents="none">Hookup</Text>
                 </TouchableOpacity>
               </View>
+
+              {person.choice && (
+                <Text style={styles.selectedChoiceText}>
+                  You chose: {getChoiceIcon(person.choice)} {person.choice.toUpperCase()}
+                </Text>
+              )}
             </View>
           ))}
 
-          <Text style={styles.instruction}>Tap to make your choice</Text>
+          <TouchableOpacity
+            style={[
+              styles.nextRoundButton,
+              !isRoundComplete && styles.nextRoundButtonDisabled,
+            ]}
+            onPress={handleNextRound}
+            disabled={!isRoundComplete}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.nextRoundButtonText}>
+              {isRoundComplete ? 'Next Round ➡️' : 'Make choices for all first'}
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -165,21 +223,6 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.base,
     fontWeight: theme.typography.weights.medium,
   },
-  titleSection: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.lg,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: theme.typography.sizes['3xl'],
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.foreground,
-    marginBottom: theme.spacing.sm,
-  },
-  subtitle: {
-    fontSize: theme.typography.sizes.base,
-    color: theme.colors.mutedForeground,
-  },
   scrollView: {
     flex: 1,
   },
@@ -201,7 +244,6 @@ const styles = StyleSheet.create({
   },
   choicesContainer: {
     flexDirection: 'row',
-    gap: theme.spacing.sm,
   },
   choiceButton: {
     flex: 1,
@@ -209,6 +251,15 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: theme.spacing.xs,
+    minHeight: 60,
+    zIndex: 1,
+  },
+  choiceButtonFirst: {
+    marginLeft: 0,
+  },
+  choiceButtonLast: {
+    marginRight: 0,
   },
   choiceButtonSelected: {
     transform: [{ scale: 1.05 }],
@@ -217,6 +268,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   choiceIcon: {
     fontSize: 24,
@@ -227,12 +280,28 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.base,
     fontWeight: theme.typography.weights.bold,
   },
-  instruction: {
-    textAlign: 'center',
+  selectedChoiceText: {
+    marginTop: theme.spacing.sm,
     fontSize: theme.typography.sizes.base,
-    color: theme.colors.mutedForeground,
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.xl,
+    color: theme.colors.foreground,
+    fontWeight: theme.typography.weights.medium,
+    textAlign: 'center',
+  },
+  nextRoundButton: {
+    marginTop: theme.spacing.md,
+    backgroundColor: theme.colors.killMarryHookup,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
+    borderRadius: theme.borderRadius.xl,
+    alignItems: 'center',
+  },
+  nextRoundButtonDisabled: {
+    opacity: 0.5,
+  },
+  nextRoundButtonText: {
+    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold,
   },
 });
 
