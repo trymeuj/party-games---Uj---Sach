@@ -20,18 +20,7 @@ type Props = {
   navigation: TabooScreenNavigationProp;
 };
 
-const TABOO_CARDS = [
-  { word: 'Coffee', forbidden: ['Drink', 'Caffeine', 'Starbucks', 'Beans', 'Morning'] },
-  { word: 'Beach', forbidden: ['Sand', 'Ocean', 'Sun', 'Summer', 'Waves'] },
-  { word: 'Superman', forbidden: ['Adventures', 'Hero', 'Fly', 'Kryptonite', 'Clark Kent'] },
-  { word: 'iPhone', forbidden: ['Apple', 'Phone', 'Call', 'Siri', 'Steve Jobs'] },
-  { word: 'Pizza', forbidden: ['Cheese', 'Pepperoni', 'Italy', 'Dough', 'Slice'] },
-  { word: 'Guitar', forbidden: ['Strings', 'Music', 'Instrument', 'Play', 'Rock'] },
-  { word: 'Vampire', forbidden: ['Blood', 'Dracula', 'Teeth', 'Bat', 'Twilight'] },
-  { word: 'Instagram', forbidden: ['Photo', 'App', 'Like', 'Filter', 'Story'] },
-  { word: 'Snowman', forbidden: ['Winter', 'Cold', 'Carrot', 'Frosty', 'White'] },
-  { word: 'Library', forbidden: ['Books', 'Read', 'Quiet', 'Study', 'School'] },
-];
+import { TABOO_CARDS } from './data';
 
 export default function TabooScreen({ navigation }: Props) {
   const [hasStarted, setHasStarted] = React.useState(false);

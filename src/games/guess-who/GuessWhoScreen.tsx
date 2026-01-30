@@ -22,27 +22,19 @@ type Props = {
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
-const CELEBRITIES = [
-  'Taylor Swift', 'Dwayne Johnson', 'Leonardo DiCaprio', 'Beyoncé', 'Brad Pitt',
-  'Rihanna', 'Will Smith', 'Kim Kardashian', 'Johnny Depp', 'Lady Gaga',
-  'Tom Cruise', 'Ariana Grande', 'Robert Downey Jr.', 'Justin Bieber', 'Jennifer Lawrence',
-  'Chris Hemsworth', 'Selena Gomez', 'Kanye West', 'Scarlett Johansson', 'Drake',
-  'Angelina Jolie', 'Kevin Hart', 'Oprah Winfrey', 'Elon Musk', 'Mark Zuckerberg',
-  'Barack Obama', 'Donald Trump', 'Michael Jordan', 'Serena Williams', 'Lionel Messi',
-  'Cristiano Ronaldo', 'Harry Styles', 'Gordon Ramsay'
-];
+import { GUESS_WHO_CELEBS } from './data';
 
 export default function GuessWhoScreen({ navigation }: Props) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [isRevealed, setIsRevealed] = useState(false);
   const [currentCelebrity, setCurrentCelebrity] = useState(() => {
-    return CELEBRITIES[Math.floor(Math.random() * CELEBRITIES.length)];
+    return GUESS_WHO_CELEBS[Math.floor(Math.random() * GUESS_WHO_CELEBS.length)];
   });
 
   const nextCelebrity = () => {
     let newCeleb;
     do {
-      newCeleb = CELEBRITIES[Math.floor(Math.random() * CELEBRITIES.length)];
+      newCeleb = GUESS_WHO_CELEBS[Math.floor(Math.random() * GUESS_WHO_CELEBS.length)];
     } while (newCeleb === currentCelebrity);
 
     setCurrentCelebrity(newCeleb);

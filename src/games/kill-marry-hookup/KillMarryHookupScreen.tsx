@@ -28,52 +28,7 @@ interface Person {
   choice: Choice;
 }
 
-const ALL_PEOPLE = [
-  'Harry Styles',
-  'Person on Your Left',
-  'Your Uber Driver',
-  'Your Ex',
-  'Your Boss',
-  'Your Celebrity Crush',
-  'Your Best Friend',
-  'Your Childhood Crush',
-  'Your Neighbor',
-  'The Person Who Texted You Last',
-  'Your First Date',
-  'Your High School Bully',
-  'The Bartender',
-  'Your Clone',
-  'A Billionaire Octogenarian',
-  'Your Favorite Teacher',
-  'The Person on Your Right',
-  'Kanye West',
-  'Your Landlord',
-  'The Person Holding Your Drink',
-  'A Random Stranger',
-  'Your Therapist',
-  'Your Gym Trainer',
-  'The President',
-  'Your Doppelgänger',
-  'A Pirate Captain',
-  'An Alien Visitor',
-  // Famous Personalities
-  'Taylor Swift',
-  'Dwayne "The Rock" Johnson',
-  'Zendaya',
-  'Leonardo DiCaprio',
-  'Kim Kardashian',
-  'Elon Musk',
-  'Rihanna',
-  'Brad Pitt',
-  'Beyoncé',
-  'Tom Holland',
-  'Jennifer Lawrence',
-  'Will Smith',
-  'Margot Robbie',
-  'Barack Obama',
-  'Gordon Ramsay',
-  'Justin Bieber',
-];
+import { KMH_OPTIONS } from './data';
 
 const WITTY_COMMENTS = {
   kill: [
@@ -107,7 +62,7 @@ const getWittyComment = (choice: 'kill' | 'marry' | 'hookup', name: string) => {
 };
 
 const generateRound = (): Person[] => {
-  const shuffled = [...ALL_PEOPLE].sort(() => Math.random() - 0.5);
+  const shuffled = [...KMH_OPTIONS].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 3).map((name) => ({ name, choice: null }));
 };
 
